@@ -70,6 +70,7 @@ import { replace } from "connected-react-router";
 import { ROUTES } from "../../../configs/routes";
 import { getErrorMessageResponse } from "../../../utils";
 import LoginForm from "../components/LoginForm"
+import { FormattedMessage } from "react-intl";
 
 const LoginPage = () => {
     const dispatch = useDispatch<ThunkDispatch<AppState, null, Action<string>>>();
@@ -105,6 +106,9 @@ const LoginPage = () => {
             columns={6} width={1} justifyContent="space-evenly"
             alignItems="center" maxWidth={"600px"} sx={{ backgroundColor: "white", border: `2px solid ${blue["A100"]}`, borderRadius: 10 }}>
             <LoginForm loading={loading} onLogin={onLogin} errorMessage={errorMessage} />
+            <a href="/register">
+                <FormattedMessage id="register" />
+            </a>
         </Grid>
     </Grid>
     )
