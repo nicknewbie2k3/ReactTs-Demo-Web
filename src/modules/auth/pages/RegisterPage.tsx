@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { ThunkDispatch } from "redux-thunk";
 import { AppState } from "../../../redux/reducer";
@@ -6,6 +6,13 @@ import { Action } from "redux";
 import RegisterForm from "../components/RegisterForm";
 import { Grid } from "@mui/material";
 import { blue } from "@mui/material/colors";
+import { fetchThunk } from "../../common/redux/thunk";
+import { API_PATHS } from "../../../configs/api";
+import { RESPONSE_STATUS_SUCCESS } from "../../../utils/httpResponseCode";
+import { getErrorMessageResponse } from "../../../utils";
+import { replace } from "connected-react-router";
+import { ROUTES } from "../../../configs/routes";
+import { IRegisterParams } from "../../../models/auth";
 
 const RegisterPage = () => {
     const dispatch = useDispatch<ThunkDispatch<AppState, null, Action<string>>>();
@@ -13,16 +20,34 @@ const RegisterPage = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const [locations, setLocations] = useState([]);
 
-    const getLocation = React.useCallback(async () => {
+    const getLocations = useCallback(async (): Promise<void> => {
+        const json = await dispatch(fetchThunk(API_PATHS.location, "get"))
+        if (json?.code === RESPONSE_STATUS_SUCCESS) {
+            setLocations(json.data)
+            return;
+        }
 
-    }, []);
+        setErrorMessage(getErrorMessageResponse(json));
+    }, [dispatch])
 
     useEffect(() => {
+        getLocations()
+    }, [getLocations])
 
-    }, [getLocation]);
+    const onRegister = useCallback(async (values: IRegisterParams) => {
+        setErrorMessage("");
+        setLoading(true)
 
-    const onRegister = React.useCallback(() => {}, []);
+        const json = await dispatch(fetchThunk(API_PATHS.signUp, "post", { email: values.email, password: values.password, confirmPassword: values.confirmPassword, name: values.name, gender: values.gender, region: +values.region, state: +values.state }))
+        setLoading(false);
 
+        if (json?.code === RESPONSE_STATUS_SUCCESS) {
+            dispatch(replace(ROUTES.login));
+            return;
+        }
+
+        setErrorMessage(getErrorMessageResponse(json));
+    }, [dispatch])
 return (
 <Grid container
 direction="row"
