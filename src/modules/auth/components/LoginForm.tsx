@@ -25,6 +25,8 @@ const LoginForm = (props: Props) => {
 
     const [formValues, setFormValues] = React.useState<ILoginParams>({email: '', password: '', rememberMe: false});
     const [validate, setValidate] = React.useState<ILoginValidation>();
+    const [validatedInfo, setValidatedInfo] = React.useState<ILoginValidation>({email: formValues.email, password: formValues.password});
+    const [loginError, setLoginError] = React.useState(false);
 
     const navRegister = () => {
         dispatch(replace(ROUTES.register));
@@ -35,21 +37,26 @@ const LoginForm = (props: Props) => {
     }
 
     const onSubmit = React.useCallback(() => {
-        const validate = validateLogin(formValues);
-        setValidate(validate);
-        if (!validLogin(validate)) {
+        setValidatedInfo({email: formValues.email, password: formValues.password});
+        const validate = validateLogin(formValues); 
+        setValidate(validate); //
+        const validLoginVar = !!validLogin(validatedInfo);
+        if (validLoginVar === false) {
+            setLoginError(true);
             return;
         }
+        setLoginError(true);
         if (formValues.rememberMe){
-            localStorage.setItem(formValues.email, formValues.password);
+            const userInfo = {email: formValues.email, password: formValues.password}
+            localStorage.setItem("rememberMe", JSON.stringify(userInfo));
         }
         Cookies.set(ACCESS_TOKEN_KEY, "1", );
         onLogin(formValues);
         dispatch(replace(ROUTES.home));
-    }, [dispatch, formValues, onLogin]);
+    }, [dispatch, formValues, onLogin, validatedInfo]);
 
     if (errorMessage !== "") {return(
-    <Alert severity="error">{errorMessage}</Alert>);}
+    <Alert severity="error"><small>Please refresh the page!</small>{errorMessage}</Alert>);}
 
     if (Cookies.get(ACCESS_TOKEN_KEY))
     {
@@ -66,7 +73,7 @@ const LoginForm = (props: Props) => {
                 <label htmlFor="inputEmail" className="form-label">
                     <FormattedMessage id="email" />
                 </label>
-                <input type="text" className="form-control" id="inputEmail" value={formValues.email} onChange={(e) => setFormValues({ ...formValues, email: e.target.value})}/>
+                <input type="text" className="form-control" id="inputEmail" value={formValues.email} onChange={(e) => {setFormValues({ ...formValues, email: e.target.value}); setValidatedInfo({...validatedInfo, email: e.target.value});}}/>
 
                 {!!validate?.email && (
                     <small className="text-danger">
@@ -79,7 +86,13 @@ const LoginForm = (props: Props) => {
                 <label htmlFor="inputPassword" className="form-label">
                     <FormattedMessage id="password" />
                 </label>
-                <input type="password" className="form-control" id="inputPassword" value={formValues.password} onChange={(e) => setFormValues({ ...formValues, password: e.target.value})}/>
+                <input type="password" className="form-control" id="inputPassword" value={formValues.password} onChange={(e) => {setFormValues({ ...formValues, password: e.target.value}); setValidatedInfo({...validatedInfo, password: e.target.value})}}/>
+
+                {!!validate?.password && (
+                    <small className="text-danger">
+                        <FormattedMessage id={validate?.password} />
+                    </small>
+                )}
             </div>
 
             <div className="col-12">
@@ -90,6 +103,7 @@ const LoginForm = (props: Props) => {
                     </label>
                 </div>
             </div>
+
 
             <div className="row justify-content-md-center" style={{margin: '16px 0'}}>
                 <div className="col-md-auto">
@@ -113,6 +127,12 @@ const LoginForm = (props: Props) => {
                         </button>
 
                 </div>
+
+                {loginError && (
+                    <small>
+                        Login error
+                    </small>
+                )}
             </div>
         </form>
     )

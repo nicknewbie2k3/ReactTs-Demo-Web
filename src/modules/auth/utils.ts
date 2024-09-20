@@ -10,7 +10,7 @@ const validateEmail = (email: string) => {
         return 'emailInvalid';
     }
 
-    return '';
+    return "";
 };
 const validateField = (field: string, value:string) => {
     let fieldRequire = '';
@@ -40,7 +40,7 @@ const validatePassword = (password: string) => {
         return 'minPasswordInvalid';
     }
 
-    return '';
+    return "";
 };
 const validateConfirmPassword = (password: string, confirmPassword: string) => {
     if (!confirmPassword) {
@@ -61,11 +61,14 @@ export const validateLogin = (values: ILoginParams): ILoginValidation => {
         email: validateEmail(values.email),
         password: validatePassword(values.password),
     };
-};
+};                     
 
 export const validLogin = (values: ILoginValidation) => {
-    return !values.email && !values.password;
+    const valueData = JSON.parse(localStorage.getItem("registerData") || '{}');
+    if ( (valueData[0] === values.email) && (valueData[1] === values.password))
+    return true; else return false;
 };
+
 export const validateRegister = (values: IRegisterParams): IRegisterValidation => {
     return {
         email: validateEmail(values.email),
