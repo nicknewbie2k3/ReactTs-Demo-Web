@@ -9,7 +9,6 @@ import { ThunkDispatch } from "redux-thunk";
 import { AppState } from "../../../redux/reducer";
 import { Action } from "redux";
 import { Alert } from "@mui/material";
-//import registerInfoList from "../../../registerInfoList.json"
 
 interface Props {
     onRegister(values: IRegisterParams): void;
@@ -27,10 +26,12 @@ const RegisterForm = (props: Props) => {
     const [selectOption, setSelectOption] = React.useState("");
 
     const onSubmit = React.useCallback (() => {
-        const validate = validateRegister(formValues);
+        const validate = validateRegister(formValues); // Ham luu valid session
         setValidate(validate);
-        if (!validRegister(validate)){return;}
+        if (!validRegister(validate)){return;} // Ham check valid
         onRegister(formValues);
+        const registerData = JSON.stringify([formValues.email, formValues.password, formValues.name, formValues.gender, formValues.region, formValues.state]);
+        localStorage.setItem("registerData", registerData);
         dispatch(replace(ROUTES.login));
     }, [dispatch, formValues, onRegister]);
 
