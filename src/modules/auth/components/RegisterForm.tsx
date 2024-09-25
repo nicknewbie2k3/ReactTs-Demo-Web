@@ -97,6 +97,11 @@ const RegisterForm = (props: Props) => {
                     <FormattedMessage id="password" />
                 </label>
                 <input type="password" className="form-control" id="inputPassword" value={formValues.password} onChange={(e) => setFormValues({ ...formValues, password: e.target.value})}/>
+                {!!validate?.password && (
+                    <small className="text-danger">
+                        <FormattedMessage id={validate?.password} />
+                    </small>
+                )}
             </div>
 
             <div className="col-md-12">

@@ -46,9 +46,9 @@ const LoginForm = (props: Props) => {
             return;
         }
         setLoginError(true);
+        localStorage.setItem("loginSession", JSON.stringify(validatedInfo));
         if (formValues.rememberMe){
-            const userInfo = {email: formValues.email, password: formValues.password}
-            localStorage.setItem("rememberMe", JSON.stringify(userInfo));
+            localStorage.setItem("rememberMe", "true");       
         }
         Cookies.set(ACCESS_TOKEN_KEY, "1", );
         onLogin(formValues);
@@ -58,10 +58,10 @@ const LoginForm = (props: Props) => {
     if (errorMessage !== "") {return(
     <Alert severity="error"><small>Please refresh the page!</small>{errorMessage}</Alert>);}
 
-    if (Cookies.get(ACCESS_TOKEN_KEY))
+    if (localStorage.getItem("rememberMe") === "true")
     {
         dispatch(replace(ROUTES.home));
-    }
+    } else localStorage.removeItem("loginSession");
 
     return (
         <form
@@ -74,12 +74,6 @@ const LoginForm = (props: Props) => {
                     <FormattedMessage id="email" />
                 </label>
                 <input type="text" className="form-control" id="inputEmail" value={formValues.email} onChange={(e) => {setFormValues({ ...formValues, email: e.target.value}); setValidatedInfo({...validatedInfo, email: e.target.value});}}/>
-
-                {!!validate?.email && (
-                    <small className="text-danger">
-                        <FormattedMessage id={validate?.email} />
-                    </small>
-                )}
             </div>
 
             <div className="col-md-12">
@@ -87,12 +81,6 @@ const LoginForm = (props: Props) => {
                     <FormattedMessage id="password" />
                 </label>
                 <input type="password" className="form-control" id="inputPassword" value={formValues.password} onChange={(e) => {setFormValues({ ...formValues, password: e.target.value}); setValidatedInfo({...validatedInfo, password: e.target.value})}}/>
-
-                {!!validate?.password && (
-                    <small className="text-danger">
-                        <FormattedMessage id={validate?.password} />
-                    </small>
-                )}
             </div>
 
             <div className="col-12">
@@ -127,10 +115,19 @@ const LoginForm = (props: Props) => {
                         </button>
 
                 </div>
-
-                {loginError && (
+                {!!validate?.email && (
+                    <small className="text-danger">
+                        <FormattedMessage id={validate?.email} />
+                    </small>
+                )}                
+                {!!validate?.password && (
+                    <small className="text-danger">
+                        <FormattedMessage id={validate?.password} />
+                    </small>
+                )}
+                {!validate?.email && !validate?.password && loginError && (
                     <small>
-                        Login error
+                        Tên đăng nhập hoặc mật khẩu không đúng
                     </small>
                 )}
             </div>
