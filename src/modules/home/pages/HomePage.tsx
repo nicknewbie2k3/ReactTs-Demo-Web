@@ -16,8 +16,11 @@ const HomePage = (props: Props) => {
 
   const handleLogout = useCallback((e) => {
     Cookie.remove(ACCESS_TOKEN_KEY);
+    localStorage.removeItem("rememberMe");
+    localStorage.removeItem("loginSession");
     dispatch(replace(ROUTES.login))
   }, [dispatch])
+
   return <Grid container direction="row"
     justifyContent="center"
     alignItems="center"
