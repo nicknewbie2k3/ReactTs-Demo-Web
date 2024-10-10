@@ -10,8 +10,8 @@ export interface IUser {
   name: string;
   gender: string;
   avatar: string;
-  region: number;
-  state: number;
+  region: string;
+  state: string;
   description: string;
   createdAt: string;
   updatedAt: string;

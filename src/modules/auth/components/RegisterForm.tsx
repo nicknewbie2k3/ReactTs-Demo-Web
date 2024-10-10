@@ -194,4 +194,3 @@ const RegisterForm = (props: Props) => {
 }
 
 export default RegisterForm;
-

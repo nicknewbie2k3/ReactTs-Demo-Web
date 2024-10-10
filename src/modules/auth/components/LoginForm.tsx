@@ -60,7 +60,7 @@ const LoginForm = (props: Props) => {
 
     if (localStorage.getItem("rememberMe") === "true")
     {
-        dispatch(replace(ROUTES.home));
+        dispatch(replace(ROUTES.register));
     } else localStorage.removeItem("loginSession");
 
     return (
